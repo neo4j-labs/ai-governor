@@ -19,7 +19,9 @@ result = engine.transition_task("TASK_001", "READY_FOR_REVIEW", "DEVELOPER")
 # FAIL — EG-01: No self-review found. Fix: Create a self-review before submission.
 ```
 
-Your agents produce output. But who checks it before it hits production?
+Your agents produce output. But who checks it before it hits production? 
+
+**[Deploy to Neo4j AuraDB](https://neo4j.com/pricing/?utm_source=github&utm_medium=referral&utm_campaign=Neo4_labs_AI_Governor)** for a managed cloud experience — free tier available.
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
@@ -503,12 +505,12 @@ and testing. For production governance at scale, use Neo4j.
 pip install "ai-governor[neo4j]"
 ```
 
-> **[Deploy to Neo4j AuraDB](https://neo4j.com/pricing/?utm_source=github&utm_medium=referral&utm_campaign=Neo4_labs_AI_Governor)** for a managed cloud experience — free tier available.
-
 See [`examples/audit_trail.py`](examples/audit_trail.py) for a full audit trail
 demo with graph query patterns.
 
 Packaged schema file for bootstrap: `governor/schema/neo4j_schema.cypher`.
+
+> **[Deploy to Neo4j AuraDB](https://neo4j.com/pricing/?utm_source=github&utm_medium=referral&utm_campaign=Neo4_labs_AI_Governor)** for a managed cloud experience — free tier available.
 
 ---
 

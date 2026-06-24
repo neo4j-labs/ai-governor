@@ -504,7 +504,7 @@ pip install "ai-governor[neo4j]"
 ```
 
 > **Deploy to Neo4j AuraDB** for a managed cloud experience — free tier available
-> at [neo4j.com/cloud/aura](https://neo4j.com/cloud/aura/).
+> at [neo4j.com/cloud/aura]([https://neo4j.com/cloud/aura/](https://neo4j.com/pricing/?utm_source=github&utm_medium=referral&utm_campaign=Neo4_labs_AI_Governor)).
 
 See [`examples/audit_trail.py`](examples/audit_trail.py) for a full audit trail
 demo with graph query patterns.

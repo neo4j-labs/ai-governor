@@ -503,8 +503,7 @@ and testing. For production governance at scale, use Neo4j.
 pip install "ai-governor[neo4j]"
 ```
 
-> **Deploy to Neo4j AuraDB** for a managed cloud experience — free tier available
-> at [neo4j.com](https://neo4j.com/pricing/?utm_source=github&utm_medium=referral&utm_campaign=Neo4_labs_AI_Governor).
+> **[Deploy to Neo4j AuraDB](https://neo4j.com/pricing/?utm_source=github&utm_medium=referral&utm_campaign=Neo4_labs_AI_Governor)** for a managed cloud experience — free tier available.
 
 See [`examples/audit_trail.py`](examples/audit_trail.py) for a full audit trail
 demo with graph query patterns.

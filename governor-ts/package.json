@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
     "neo4j-driver": "^5.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",

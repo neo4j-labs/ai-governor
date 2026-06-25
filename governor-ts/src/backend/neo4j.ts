@@ -223,7 +223,7 @@ export class Neo4jBackend extends GovernorBackend {
 
     const relationships = [...outRels, ...inRels].filter(
       (r) => r.type != null,
-    ) as TaskData["relationships"];
+    ) as unknown as TaskData["relationships"];
 
     const result: TaskData & Record<string, unknown> = { task, relationships };
     if (truncated) {

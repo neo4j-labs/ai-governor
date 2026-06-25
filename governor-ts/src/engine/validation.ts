@@ -65,7 +65,7 @@ export function validateStateMachine(sm: StateMachineDef): string[] {
   const toStates = new Set<string>();
 
   for (let i = 0; i < transitions.length; i++) {
-    const t = transitions[i] as Record<string, unknown>;
+    const t = transitions[i] as unknown as Record<string, unknown>;
     if (typeof t !== "object" || t == null) {
       errors.push(`Transition at index ${i} is not an object`);
       continue;

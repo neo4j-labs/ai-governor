@@ -9,6 +9,7 @@ Requires GOVERNOR_NEO4J_URI to be set. See conftest.py for details.
 import uuid
 from datetime import datetime, timezone
 
+import pytest
 
 from tests.integration.conftest import requires_neo4j
 
@@ -55,18 +56,23 @@ class TestCreateAndGetTask:
 
         neo4j_backend.create_task(task_data)
 
+        # get_task returns a nested envelope: {"task": {...}, "relationships": [...]}
         retrieved = neo4j_backend.get_task(task_id)
         assert retrieved is not None
-        assert retrieved["task_id"] == task_id
-        assert retrieved["task_name"] == "Integration test task"
-        assert retrieved["status"] == "ACTIVE"
-        assert retrieved["task_type"] == "IMPLEMENTATION"
-        assert retrieved["role"] == "DEVELOPER"
-        assert retrieved["priority"] == "HIGH"
+        task = retrieved["task"]
+        assert task["task_id"] == task_id
+        assert task["task_name"] == "Integration test task"
+        assert task["status"] == "ACTIVE"
+        assert task["task_type"] == "IMPLEMENTATION"
+        assert task["role"] == "DEVELOPER"
+        assert task["priority"] == "HIGH"
 
-    def test_get_nonexistent_task_returns_none(self, neo4j_backend):
-        result = neo4j_backend.get_task("TASK_DOES_NOT_EXIST_99999")
-        assert result is None
+    def test_get_nonexistent_task_raises(self, neo4j_backend):
+        # The backend contract raises ValueError for a missing task (matching
+        # MemoryBackend and what the transition engine relies on), rather than
+        # returning None.
+        with pytest.raises(ValueError):
+            neo4j_backend.get_task("TASK_DOES_NOT_EXIST_99999")
 
 
 @requires_neo4j
@@ -87,7 +93,7 @@ class TestFullLifecycle:
             "content": "Full lifecycle integration test.",
         })
 
-        task = neo4j_backend.get_task(task_id)
+        task = neo4j_backend.get_task(task_id)["task"]
         assert task["status"] == "ACTIVE"
 
         # 2. Transition to READY_FOR_REVIEW
@@ -97,7 +103,7 @@ class TestFullLifecycle:
             expected_current_status="ACTIVE",
         )
 
-        task = neo4j_backend.get_task(task_id)
+        task = neo4j_backend.get_task(task_id)["task"]
         assert task["status"] == "READY_FOR_REVIEW"
 
         # 3. Transition to COMPLETED
@@ -107,7 +113,7 @@ class TestFullLifecycle:
             expected_current_status="READY_FOR_REVIEW",
         )
 
-        task = neo4j_backend.get_task(task_id)
+        task = neo4j_backend.get_task(task_id)["task"]
         assert task["status"] == "COMPLETED"
 
 
@@ -139,8 +145,8 @@ class TestAuditTrailOrdering:
                 "calling_role": "ANALYST",
                 "result": "PASS",
                 "dry_run": False,
-                "timestamp": "2026-03-01T10:00:00Z",
-                "guard_evaluations": [],
+                "occurred_at": "2026-03-01T10:00:00Z",
+                "guard_results": [],
             },
             {
                 "event_id": _unique_id("EVT"),
@@ -151,8 +157,8 @@ class TestAuditTrailOrdering:
                 "calling_role": "REVIEWER",
                 "result": "PASS",
                 "dry_run": False,
-                "timestamp": "2026-03-01T11:00:00Z",
-                "guard_evaluations": [],
+                "occurred_at": "2026-03-01T11:00:00Z",
+                "guard_results": [],
             },
             {
                 "event_id": _unique_id("EVT"),
@@ -163,8 +169,8 @@ class TestAuditTrailOrdering:
                 "calling_role": "ANALYST",
                 "result": "PASS",
                 "dry_run": False,
-                "timestamp": "2026-03-01T12:00:00Z",
-                "guard_evaluations": [],
+                "occurred_at": "2026-03-01T12:00:00Z",
+                "guard_results": [],
             },
         ]
 
@@ -175,13 +181,15 @@ class TestAuditTrailOrdering:
         trail = neo4j_backend.get_task_audit_trail(task_id)
         assert len(trail) >= 3
 
-        # Verify chronological ordering
-        timestamps = [e["timestamp"] for e in trail]
-        assert timestamps == sorted(timestamps), "Audit trail must be in chronological order"
+        # The audit trail is returned newest-first (ORDER BY occurred_at DESC),
+        # matching MemoryBackend and the engine's expectations.
+        timestamps = [e["occurred_at"] for e in trail]
+        assert timestamps == sorted(timestamps, reverse=True), \
+            "Audit trail must be in reverse-chronological order (newest first)"
 
-        # Verify transition IDs are correct
+        # Verify transition IDs are correct (newest first)
         transition_ids = [e["transition_id"] for e in trail[:3]]
-        assert transition_ids == ["T01", "T03", "T04"]
+        assert transition_ids == ["T04", "T03", "T01"]
 
 
 @requires_neo4j
@@ -238,8 +246,8 @@ class TestGuardEvaluationPersisted:
             "calling_role": "SRE",
             "result": "FAIL",
             "dry_run": False,
-            "timestamp": "2026-03-01T09:00:00Z",
-            "guard_evaluations": guard_evals,
+            "occurred_at": "2026-03-01T09:00:00Z",
+            "guard_results": guard_evals,
         })
 
         # Retrieve the audit trail and check guard evaluations
@@ -251,7 +259,7 @@ class TestGuardEvaluationPersisted:
         assert event["transition_id"] == "T01"
 
         # Check that guard evaluations are attached
-        persisted_evals = event.get("guard_evaluations", [])
+        persisted_evals = event.get("guard_results", [])
         assert len(persisted_evals) == 3
 
         # Verify specific guard results

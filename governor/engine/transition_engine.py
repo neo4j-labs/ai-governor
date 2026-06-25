@@ -33,9 +33,12 @@ import time
 from importlib import import_module, reload
 from importlib import resources
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
 from governor.backend.base import GovernorBackend
+
+if TYPE_CHECKING:
+    from governor.backend.async_base import AsyncGovernorBackend
 from governor.engine.enums import ErrorCode, TransitionResult
 from governor.engine.telemetry import get_tracer
 from governor.engine.validation import validate_state_machine
@@ -60,7 +63,7 @@ class GuardContext:
         task_id: str,
         task_data: Dict[str, Any],
         transition_params: Optional[Dict[str, Any]] = None,
-        backend: Optional[GovernorBackend] = None,
+        backend: Optional[Union[GovernorBackend, "AsyncGovernorBackend"]] = None,
     ):
         self.task_id = task_id
         self.task = task_data["task"]
@@ -636,8 +639,9 @@ class TransitionEngine:
     def __del__(self) -> None:
         # Safety net: attempt non-blocking shutdown if caller forgot.
         try:
-            if getattr(self, "_guard_executor", None) is not None:
-                self._guard_executor.shutdown(wait=False)
+            executor = getattr(self, "_guard_executor", None)
+            if executor is not None:
+                executor.shutdown(wait=False)
         except Exception:
             pass
 

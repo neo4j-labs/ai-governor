@@ -35,11 +35,12 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from governor.backend.base import GovernorBackend
 
-_Neo4jDriver: Any
+_Neo4jDriver: Any = None
 try:
-    from neo4j import GraphDatabase as _Neo4jDriver
+    from neo4j import GraphDatabase
+    _Neo4jDriver = GraphDatabase
 except ImportError:
-    _Neo4jDriver = None
+    pass
 
 logger = logging.getLogger("governor.backend.neo4j")
 

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "State-machine-enforced quality gates for AI agent output — TypeScript SDK",
   "type": "module",
+  "engines": {
+    "node": ">=20.12"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -41,10 +44,10 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@vitest/coverage-v8": "^2.0.0",
+    "@vitest/coverage-v8": "^4.1.9",
     "neo4j-driver": "^5.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^2.0.0"
+    "vitest": "^4.1.9"
   }
 }

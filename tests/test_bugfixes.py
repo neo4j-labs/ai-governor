@@ -179,7 +179,10 @@ class TestFix2TOCTOURaceProtection:
         """MemoryBackend has access to _get_task_lock from base class."""
         backend = MemoryBackend()
         lock = backend._get_task_lock("TASK_TEST")
-        assert isinstance(lock, threading.Lock)
+        # threading.Lock is a factory function, not a type, so it cannot be
+        # used as the second arg to isinstance(); compare against the actual
+        # lock primitive type instead.
+        assert isinstance(lock, type(threading.Lock()))
 
     def test_per_task_locks_are_independent(self):
         """Different task_ids get independent Lock objects."""

@@ -49,7 +49,9 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: ["18", "20", "22"]
+        # vitest 4 (via rolldown) requires Node >=20.12 (uses node:util styleText),
+        # so Node 18 is no longer supported.
+        node-version: ["20", "22", "24"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

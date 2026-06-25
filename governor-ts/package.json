@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "State-machine-enforced quality gates for AI agent output — TypeScript SDK",
   "type": "module",
+  "engines": {
+    "node": ">=20.12"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

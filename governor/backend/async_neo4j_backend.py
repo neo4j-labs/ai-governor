@@ -34,11 +34,12 @@ from typing import Any, Dict, List, Optional, Tuple
 from governor.backend.async_base import AsyncGovernorBackend
 from governor.backend.neo4j_backend import _validate_property_name
 
-_AsyncNeo4jDriver: Any
+_AsyncNeo4jDriver: Any = None
 try:
-    from neo4j import AsyncGraphDatabase as _AsyncNeo4jDriver
+    from neo4j import AsyncGraphDatabase
+    _AsyncNeo4jDriver = AsyncGraphDatabase
 except ImportError:
-    _AsyncNeo4jDriver = None
+    pass
 
 logger = logging.getLogger("governor.backend.async_neo4j")
 

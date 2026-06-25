@@ -36,7 +36,7 @@ neo4j = ["neo4j>=5.0", "python-dotenv>=0.19"]
 mcp = ["mcp>=1.0"]
 metrics = ["prometheus_client>=0.17"]
 types = ["typing_extensions>=4.0; python_version < '3.12'"]
-dev = ["pytest>=7.0", "pytest-cov", "pytest-asyncio", "ruff", "mypy", "typing_extensions>=4.0"]
+dev = ["pytest>=7.0", "pytest-cov", "pytest-asyncio", "pytest-timeout", "ruff", "mypy", "typing_extensions>=4.0"]
 
 [tool.setuptools.packages.find]
 include = ["governor*"]
